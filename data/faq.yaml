@@ -1,0 +1,74 @@
+faq:
+  - question: "How much does the bootcamp cost?"
+    answer: "Our AI Engineering bootcamp tuition is $1,500 so it costs $1,500. We offer flexible payment plans and financing options to make the program accessible. We also have scolarships. If your score on the first exam is higher than 90/100 you will get 70% discount"
+    category: "pricing"
+  
+  - question: "What is the tuition cost?"
+    answer: "Our AI Engineering bootcamp tuition is $1,500 so it costs $1,500. We offer flexible payment plans and financing options to make the program accessible. We also have scolarships. If your score on the first exam is higher than 90/100 you will get 70% discount"
+    category: "pricing"
+
+  - question: "How much is the price?"
+    answer: "Our AI Engineering bootcamp tuition is $1,500 so it costs $1,500. We offer flexible payment plans and financing options to make the program accessible. We also have scolarships. If your score on the first exam is higher than 90/100 you will get 70% discount"
+    category: "pricing"
+
+  - question: "Do you offer a job guarantee?"
+    answer: "Yes,we absolutely offer a job guarantee. If you don't land a tech job within 6 months of graduation, we'll refund your tuition in full."
+    category: "employment"
+
+  - question: "Will I have a job after graduating?"
+    answer: "Yes, we offer a job guarantee absolutely. If you don't land a tech job within 6 months of graduation, we'll refund your tuition in full."
+    category: "employment" 
+
+  - question: "What can i work as after graduation?"
+    answer: "You can work as an AI/ML engineer (Build and deploy machine learning models in production systems), Data Scientist (Analyze data to extract insights, create predictive models,), AI Research Engineer or NLP Engineer(Build systems that process human language, like chatbots)."
+    category: "employment" 
+
+  - question: "What job can I have?"
+    answer: "You can work as an AI/ML engineer (Build and deploy machine learning models in production systems), Data Scientist (Analyze data to extract insights, create predictive models,), AI Research Engineer or NLP Engineer(Build systems that process human language, like chatbots)."
+    category: "employment"  
+
+
+  - question: "What are the prerequisites for the program?"
+    answer: "Basic programming knowledge in Python is recommended but not required. We provide comprehensive pre-work materials to help you prepare, regardless of your starting level."
+    category: "prerequirements"
+
+  - question: "What do I need to know before starting the program?"
+    answer: "Basic programming knowledge in Python is recommended but not required. We provide comprehensive pre-work materials to help you prepare, regardless of your starting level."
+    category: "prerequirements"
+
+  - question: "How long is the program?"
+    answer: "The program is 16 weeks full-time (40 hours/week) or 24 weeks part-time (20 hours/week), depending on your schedule preference."
+    category: "program"
+
+  - question: "What programming languages and technologies will I learn?"
+    answer: "You'll master Python, JavaScript, SQL, and cutting-edge AI/ML frameworks including TensorFlow, PyTorch, LangChain, and various LLM tools."
+    category: "curriculum"
+
+  - question: "Do you provide career support and job placement assistance?"
+    answer: "Absolutely! We provide comprehensive career support including resume optimization, interview preparation, portfolio development, and direct connections to our hiring partner network."
+    category: "career"
+
+  - question: "What kind of projects will I work on?"
+    answer: "You'll build real-world AI applications including chatbots, recommendation systems, computer vision projects, and deploy full-stack AI applications to cloud platforms."
+    category: "curriculum"
+
+  - question: "Is the program suitable for beginners?"
+    answer: "Yes! Our program is designed to take students from beginner to job-ready. We start with fundamentals and progressively build to advanced AI engineering concepts."
+    category: "prerequirements"
+
+  - question: "What's the class schedule like?"
+    answer: "Full-time: Monday-Friday, 9 AM - 6 PM. Part-time: Evenings and weekends with flexible scheduling options to accommodate working professionals."
+    category: "program"
+  
+  - question: "What do I need to apply?"
+    answer: "You need to fill the google form then verify your email. After that you will recieve an email with a link to pay for the program and schedule the day"
+    category: "application"
+
+
+  - question: "Do you offer any scholarships or discounts?"
+    answer: "Yes, we offer need-based scholarships, early bird discounts, and special pricing for veterans, underrepresented groups, and career changers. Contact admissions for details."
+    category: "pricing"
+
+  - question: "Can I contact administration?"
+    answer: "Number of our administration:+37477292901"
+    category: "number"

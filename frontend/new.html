@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LunarTech — Chat with RAG Agent</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --panel:#0b1220;
+      --muted:#94a3b8;
+      --accent:#60a5fa;
+      --user:#1f2937;
+      --assistant:#071129;
+      --card:#0b1220;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{background:linear-gradient(180deg,#031026 0%, #07112a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px;}
+    .app{width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;box-shadow:0 8px 40px rgba(2,6,23,0.6);overflow:hidden;display:flex;flex-direction:column;}
+    header{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;}
+    header h1{margin:0;font-size:16px;letter-spacing:0.2px}
+    header p{margin:0;color:var(--muted);font-size:13px}
+    main{display:flex;gap:20px;padding:18px;align-items:stretch;}
+    .chat{flex:1;display:flex;flex-direction:column;height:64vh;min-height:420px;background:var(--card);border-radius:10px;padding:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.02);}
+    .messages{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:12px;}
+    .msg{max-width:78%;padding:12px;border-radius:10px;line-height:1.3;word-break:break-word;}
+    .msg.user{align-self:flex-end;background:linear-gradient(180deg,#1f2937,#111827);color:#e6eef8;border:1px solid rgba(255,255,255,0.03);}
+    .msg.assistant{align-self:flex-start;background:linear-gradient(180deg,#071129,#001522);border:1px solid rgba(96,165,250,0.08);color:#dff1ff;}
+    .meta{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:8px;align-items:center;}
+    .composer{display:flex;gap:10px;padding:12px;border-top:1px solid rgba(255,255,255,0.02);align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);}
+    .composer textarea{flex:1;min-height:48px;max-height:160px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;resize:none;font-size:14px;}
+    .composer button{background:linear-gradient(90deg,#2563eb,#7c3aed);padding:10px 14px;border-radius:8px;border:none;color:white;font-weight:600;cursor:pointer;}
+    .composer .small{font-size:13px;color:var(--muted);margin-right:6px;}
+    aside{width:300px;min-width:260px;background:rgba(255,255,255,0.02);border-left:1px solid rgba(255,255,255,0.02);padding:12px;border-radius:8px;}
+    .panel-title{font-weight:600;margin-bottom:8px}
+    .info-row{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer;}
+    .confidence{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--muted);font-size:13px}
+    .status{font-size:13px;color:var(--muted);margin-top:8px}
+    .small-muted{font-size:12px;color:var(--muted)}
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:#0b1220;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:13px}
+    .clear{opacity:0.6;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);cursor:pointer}
+    .session{font-size:12px;color:var(--muted);word-break:break-all}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="LunarTech chat app">
+    <header>
+      <div class="logo">LT</div>
+      <div>
+        <h1>LunarTech — AI Assistant</h1>
+        <p>RAG-powered Q&A (FAQ + Gemma)</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="small-muted">Server: <span id="server-url">/api/chat</span></div>
+        <div class="small-muted">Session: <span id="session-id" class="session"></span></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="chat" aria-live="polite">
+        <div class="messages" id="messages"></div>
+
+        <div class="composer" role="region" aria-label="Chat composer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="small-muted">You:</div>
+          </div>
+          <textarea id="input" placeholder="Ask something like: 'How much does the bootcamp cost?'" onkeydown="handleKey(event)"></textarea>
+          <button id="sendBtn">Send</button>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel-title">Conversation Info</div>
+        <div class="info-row">Confidence: <span id="last-confidence" class="confidence">—</span></div>
+        <div class="info-row">Last response time: <span id="last-time" class="small-muted">—</span></div>
+
+        <div style="margin-top:12px">
+          <div class="panel-title">Controls</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn-ghost" id="clearBtn">Clear</button>
+            <button class="btn-ghost" id="copyBtn">Copy last answer</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="panel-title">Raw / Debug</div>
+          <div class="small-muted">Status</div>
+          <div id="status" class="status">Idle</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" style="display:none">Copied to clipboard</div>
+
+<script>
+  // Basic client for calling POST /api/chat
+  const apiPath = '/api/chat';
+  const messagesEl = document.getElementById('messages');
+  const sendBtn = document.getElementById('sendBtn');
+  const input = document.getElementById('input');
+  const lastConfidence = document.getElementById('last-confidence');
+  const lastTime = document.getElementById('last-time');
+  const status = document.getElementById('status');
+  const sessionIdEl = document.getElementById('session-id');
+  const toast = document.getElementById('toast');
+
+  // generate simple session id for grouping
+  const sessionId = 'sess-' + Math.random().toString(36).slice(2,10);
+  sessionIdEl.textContent = sessionId;
+
+  sendBtn.addEventListener('click', sendMessage);
+  document.getElementById('clearBtn').addEventListener('click', clearChat);
+  document.getElementById('copyBtn').addEventListener('click', copyLastAnswer);
+
+  function handleKey(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function appendMessage(text, who='assistant', meta=null){
+    const div = document.createElement('div');
+    div.className = 'msg ' + (who === 'user' ? 'user' : 'assistant');
+    div.innerHTML = `<div>${escapeHtml(text).replace(/\\n/g, '<br/>')}</div>`;
+    if(meta){
+      const m = document.createElement('div');
+      m.className = 'meta';
+      m.innerHTML = meta;
+      div.appendChild(m);
+    }
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+  }
+
+  async function sendMessage(){
+    const text = input.value.trim();
+    if(!text) return;
+    // display user message
+    appendMessage(text, 'user');
+    input.value = '';
+    status.textContent = 'Sending...';
+    const start = Date.now();
+
+    // show a temporary assistant placeholder
+    const placeholderId = 'placeholder-' + Date.now();
+    appendMessage('⏳ Thinking...', 'assistant');
+
+    try {
+      const payload = {
+        question: text,
+        session_id: sessionId
+      };
+      const res = await fetch(apiPath, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok){
+        const txt = await res.text();
+        status.textContent = `Server error: ${res.status}`;
+        replaceLastAssistant(`❗ Server error (${res.status}): ${txt}`);
+        return;
+      }
+
+      const data = await res.json();
+      // backend expected to return { answer: "...", confidence: 0.72 }
+      const answer = data.answer ?? data?.response ?? '[no answer]';
+      const conf = typeof data.confidence === 'number' ? data.confidence : null;
+      const confPct = conf !== null ? Math.round(conf * 100) + '%' : '—';
+
+      const took = ((Date.now() - start)/1000).toFixed(2) + 's';
+      replaceLastAssistant(answer, `<span class="small-muted">confidence: ${confPct}</span><span style="margin-left:10px" class="small-muted">time: ${took}</span>`);
+
+      lastConfidence.textContent = confPct;
+      lastTime.textContent = new Date().toLocaleString();
+
+      status.textContent = 'OK';
+
+    } catch (err) {
+      status.textContent = 'Network error';
+      replaceLastAssistant('❗ Network error: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  // replace the last assistant message (placeholder) with real content
+  function replaceLastAssistant(text, meta=null){
+    // find last element with class 'msg assistant'
+    const els = messagesEl.querySelectorAll('.msg.assistant');
+    if(!els.length) {
+      appendMessage(text, 'assistant', meta);
+      return;
+    }
+    const last = els[els.length - 1];
+    last.innerHTML = `<div>${escapeHtml(text).replace(/\\n/g, '<br/>')}</div>`;
+    if(meta){
+      const m = document.createElement('div');
+      m.className = 'meta';
+      m.innerHTML = meta;
+      last.appendChild(m);
+    }
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function clearChat(){
+    messagesEl.innerHTML = '';
+    lastConfidence.textContent = '—';
+    lastTime.textContent = '—';
+    status.textContent = 'Cleared';
+  }
+
+  async function copyLastAnswer(){
+    const els = messagesEl.querySelectorAll('.msg.assistant');
+    if(!els.length) return showToast('No assistant answer to copy');
+    const last = els[els.length - 1].innerText;
+    try{
+      await navigator.clipboard.writeText(last);
+      showToast('Copied last assistant message');
+    }catch(e){
+      showToast('Copy failed');
+    }
+  }
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(()=>{ toast.style.display = 'none'; }, 2200);
+  }
+
+  // basic startup welcome
+  appendMessage("Hello — I'm LunarTech assistant. Ask me FAQ-style questions (e.g. 'How much does the bootcamp cost?').", 'assistant', '<span class="small-muted">confidence: —</span>');
+</script>
+</body>
+</html>
